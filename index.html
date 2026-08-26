@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOTS POS - User Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="pos-container">
+     <header class="pos-header">
+        <div>
+            <h2><i class="fa-solid fa-glass-water"></i> ROOTS Quick Order</h2>
+            <span class="biz-day-badge" id="biz-day-badge">Business Day: --</span>
+        </div>
+        <button onclick="openAdminModal()" class="admin-link-btn" style="cursor: pointer;">
+            <i class="fa-solid fa-user-shield"></i> Admin Panel
+        </button>
+     </header>
+
+        <main class="pos-body">
+            <section class="panel item-panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-utensils"></i> ROOTS Menu</h3>
+                    <p>Select an item to add quantity</p>
+                </div>
+
+                <div class="category-bar" id="category-bar-container">
+                    <!-- Category buttons load dynamically from menu data -->
+                </div>
+
+                <div class="item-grid" id="user-item-grid">
+                    <!-- Items will load dynamically -->
+                </div>
+            </section>
+
+            <section class="panel dialpad-panel">
+                <div class="display-box">
+                    <div class="display-label" id="selected-item-label">Please Select Item</div>
+                    <div class="display-value-wrap">
+                        <span class="display-value" id="quantity-display">0</span>
+                        <span class="unit">Glasses</span>
+                    </div>
+                </div>
+
+                <div class="dialpad-grid">
+                    <button class="btn-num" onclick="appendNum('1')">1</button>
+                    <button class="btn-num" onclick="appendNum('2')">2</button>
+                    <button class="btn-num" onclick="appendNum('3')">3</button>
+                    <button class="btn-num" onclick="appendNum('4')">4</button>
+                    <button class="btn-num" onclick="appendNum('5')">5</button>
+                    <button class="btn-num" onclick="appendNum('6')">6</button>
+                    <button class="btn-num" onclick="appendNum('7')">7</button>
+                    <button class="btn-num" onclick="appendNum('8')">8</button>
+                    <button class="btn-num" onclick="appendNum('9')">9</button>
+                    <button class="btn-num btn-danger" onclick="clearDisplay()">C</button>
+                    <button class="btn-num" onclick="appendNum('0')">0</button>
+                    <button class="btn-num btn-warning" onclick="deleteLast()"><i class="fa-solid fa-backspace"></i></button>
+                </div>
+
+                <button class="btn-submit" onclick="submitOrder()">
+                    Confirm Order <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </section>
+        </main>
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="security.js"></script>
+    <script src="sheets-sync.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

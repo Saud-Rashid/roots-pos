@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOTS POS - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- SheetJS Library for Excel Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+     <div class="admin-container">
+     <header class="pos-header">
+      <h2><i class="fa-solid fa-chart-line"></i> Admin Dashboard</h2>
+     <div>
+        <a href="index.html" class="admin-link-btn"><i class="fa-solid fa-shop"></i> User POS</a>
+        <button onclick="logoutAdmin()" class="admin-link-btn" style="background: #334155; margin-left: 8px; cursor: pointer;">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+     </div>
+     </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-bar">
+            <button id="tabbtn-dashboard" class="tab-btn active" onclick="showTab('dashboard')"><i class="fa-solid fa-gauge"></i> Dashboard</button>
+            <button id="tabbtn-pricing" class="tab-btn" onclick="showTab('pricing')"><i class="fa-solid fa-tags"></i> Pricing & Items</button>
+            <button id="tabbtn-history" class="tab-btn" onclick="showTab('history')"><i class="fa-solid fa-calendar-days"></i> Sales History</button>
+            <button id="tabbtn-backup" class="tab-btn" onclick="showTab('backup')"><i class="fa-solid fa-cloud-arrow-up"></i> Backup & Sync</button>
+        </nav>
+
+        <!-- ============ TAB: DASHBOARD ============ -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="clock-card">
+                <div>
+                    <span class="clock-label"><i class="fa-solid fa-calendar-day"></i> Current Business Day</span>
+                    <span class="clock-value" id="current-business-day">--</span>
+                </div>
+                <div class="clock-divider"></div>
+                <div>
+                    <span class="clock-label"><i class="fa-solid fa-clock-rotate-left"></i> Next Auto-Reset (6:00 AM)</span>
+                    <span class="clock-value" id="next-reset-countdown">--</span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fa-solid fa-wine-glass stat-icon"></i>
+                    <div>
+                        <h4>Total Glass Sold</h4>
+                        <span id="total-glass-count">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fa-solid fa-sack-dollar stat-icon"></i>
+                    <div>
+                        <h4>Total Sales</h4>
+                        <span><span id="total-sales-amount">0</span> TK</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fa-solid fa-hand-holding-dollar stat-icon"></i>
+                    <div>
+                        <h4>Total Making Cost</h4>
+                        <span><span id="total-cost-amount">0</span> TK</span>
+                    </div>
+                </div>
+                <div class="stat-card profit-card">
+                    <i class="fa-solid fa-chart-pie stat-icon"></i>
+                    <div>
+                        <h4>Net Profit</h4>
+                        <span><span id="net-profit-amount">0</span> TK</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right; padding: 0 25px 25px;">
+                <button class="excel-btn" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Export Today (Excel)</button>
+            </div>
+        </div>
+
+        <!-- ============ TAB: PRICING & ITEMS ============ -->
+        <div id="tab-pricing" class="tab-content">
+            <section class="admin-section">
+                <h3><i class="fa-solid fa-plus"></i> Add New Item</h3>
+                <div class="add-item-form">
+                    <input type="text" id="new-item-name" placeholder="Item Name (e.g. Mango Shake)">
+                    <input type="text" id="new-item-category" list="category-suggestions" placeholder="Category (e.g. coffee-smoothies)">
+                    <datalist id="category-suggestions"></datalist>
+                    <input type="number" id="new-item-cost" placeholder="Cost (TK)">
+                    <input type="number" id="new-item-price" placeholder="Price (TK)">
+                    <button class="admin-link-btn add-item-btn" onclick="handleAddItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
+                </div>
+            </section>
+
+            <section class="admin-section">
+                <h3><i class="fa-solid fa-pen-to-square"></i> Pricing & Cost Setup</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Cost Price (TK)</th>
+                                <th>Selling Price (TK)</th>
+                                <th>Glasses Sold</th>
+                                <th>Total Sales</th>
+                                <th>Total Profit</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-menu-table">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div style="text-align: right; margin-top: 15px; padding: 0 25px 25px;">
+                <button class="btn-danger-reset" onclick="resetDayData()"><i class="fa-solid fa-triangle-exclamation"></i> Manual Reset Override</button>
+            </div>
+        </div>
+
+        <!-- ============ TAB: SALES HISTORY ============ -->
+        <div id="tab-history" class="tab-content">
+            <section class="admin-section">
+                <div class="cal-header">
+                    <button class="admin-link-btn" onclick="changeCalendarMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h3 id="history-calendar-label">--</h3>
+                    <button class="admin-link-btn" onclick="changeCalendarMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="cal-grid" id="history-calendar-grid"></div>
+                <p class="cal-hint"><i class="fa-solid fa-circle-info"></i> যেসব দিনে বিক্রি হয়েছে সেগুলো হাইলাইট করা আছে — ক্লিক করে বিস্তারিত দেখুন।</p>
+                <div id="history-detail-panel" class="history-detail-panel" style="display:none;"></div>
+            </section>
+        </div>
+
+        <!-- ============ TAB: BACKUP & SYNC ============ -->
+        <div id="tab-backup" class="tab-content">
+            <section class="admin-section">
+                <h3><i class="fa-solid fa-key"></i> Admin Password</h3>
+               
+                <button onclick="changeAdminPassword()" class="admin-link-btn"><i class="fa-solid fa-key"></i> Change Password</button>
+            </section>
+
+            <section class="admin-section">
+                <h3><i class="fa-solid fa-download"></i> Local Backup (Recommended — do this weekly)</h3>
+                <p class="section-hint">পুরো ডাটা (menu + sales history) একটি JSON ফাইলে ডাউনলোড করুন। এই ফাইলটি Google Drive বা Pendrive এ রেখে দিন — এটাই আপনার আসল "permanent" নিরাপত্তা।</p>
+                <div class="backup-actions">
+                    <button class="admin-link-btn" onclick="handleExportBackup()"><i class="fa-solid fa-file-arrow-down"></i> Export Backup (.json)</button>
+                    <label class="admin-link-btn file-label">
+                        <i class="fa-solid fa-file-arrow-up"></i> Restore from Backup
+                        <input type="file" accept=".json" style="display:none" onchange="handleRestoreFileSelected(this)">
+                    </label>
+                </div>
+            </section>
+
+            <section class="admin-section">
+                <h3><i class="fa-solid fa-cloud"></i> Free Cloud Sync (Google Sheets)</h3>
+                <p class="section-hint">
+                    সম্পূর্ণ ফ্রি, কখনো টাকা লাগবে না। SETUP_GUIDE.md ফাইলে দেওয়া নির্দেশনা অনুযায়ী একবার Google Sheet + Apps Script সেটআপ করে
+                    সেই Web App URL এখানে বসান — এরপর থেকে সব ডিভাইসে ডাটা auto-sync হবে এবং কোনোদিন হারাবে না।
+                </p>
+                <div class="sync-row">
+                    <input type="text" id="sync-url-input" placeholder="https://script.google.com/macros/s/xxxxx/exec">
+                    <button class="admin-link-btn" onclick="handleSaveSyncUrl()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                    <button class="admin-link-btn" onclick="handleTestSyncConnection()"><i class="fa-solid fa-plug"></i> Test</button>
+                </div>
+                <div class="sync-status" id="sync-status-text"></div>
+                <div class="backup-actions" style="margin-top:10px;">
+                    <button class="admin-link-btn" onclick="handlePullFromCloud()"><i class="fa-solid fa-cloud-arrow-down"></i> Restore Latest From Cloud</button>
+                    <button class="admin-link-btn" onclick="handleBackfillHistory()"><i class="fa-solid fa-rotate"></i> Sync All Past Days to Monthly Sheets</button>
+                </div>
+                <p class="section-hint" style="margin-top:10px;">
+                    প্রতিটা business day automatic ভাবে মাসিক sheet-এ (যেমন "July 2026") এক লাইন করে যোগ হয়ে যায় —
+                    Date, Total Sales, Total Making Cost, Net Profit। মাস চক্র চলে <strong>১০ তারিখ থেকে পরের মাসের ৯ তারিখ</strong> পর্যন্ত,
+                    এরপর নিজে থেকেই নতুন sheet তৈরি হয়। উপরের বাটনটা শুধু প্রথমবার cloud sync চালু করার সময় আগের দিনগুলো পাঠাতে লাগবে।
+                </p>
+            </section>
+        </div>
+
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="security.js"></script>
+    <script src="sheets-sync.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
