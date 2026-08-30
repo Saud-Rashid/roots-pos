@@ -11,26 +11,39 @@
     --danger: #ef4444;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
 
 body {
     background-color: var(--bg-body);
     color: var(--text-main);
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    overflow: hidden;
 }
 
-.pos-container, .admin-container {
+.pos-container {
     width: 100%;
     max-width: 1000px;
+    height: 100vh;
     background: var(--card-bg);
     border-radius: 24px;
     border: 1px solid var(--border);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .pos-header {
@@ -40,6 +53,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .admin-link-btn, .excel-btn {
@@ -55,279 +69,375 @@ body {
 
 .excel-btn { background: #16a34a; border: none; margin-right: 8px; }
 
-.pos-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 0; }
+.pos-body { 
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: 0;
+}
 
-@media (max-width: 768px) { .pos-body { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { 
+    .pos-body { 
+        flex-direction: column;
+    } 
+}
 
-.panel { padding: 25px; }
-.item-panel { border-right: 1px solid var(--border); }
-.panel-header { margin-bottom: 15px; flex-shrink: 0; }
+.panel { 
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.item-panel { 
+    border-right: 1px solid var(--border);
+    flex: 1.2;
+    padding: 25px;
+    overflow: hidden;
+}
+
+.panel-header { 
+    margin-bottom: 15px; 
+    flex-shrink: 0;
+}
 
 .category-bar { 
     display: flex; 
     gap: 8px; 
     overflow-x: auto; 
     padding-bottom: 12px; 
-    margin-bottom: 15px;
+    margin-bottom: 15px; 
+    flex-shrink: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.cat-btn {
+    background: var(--card-inner); 
+    color: var(--text-muted); 
+    border: 1px solid var(--border);
+    padding: 8px 14px; 
+    border-radius: 20px; 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+    white-space: nowrap; 
+    cursor: pointer;
     flex-shrink: 0;
 }
-.cat-btn {
-    background: var(--card-inner); color: var(--text-muted); border: 1px solid var(--border);
-    padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; cursor: pointer;
+
+.cat-btn.active { 
+    background: var(--primary); 
+    color: #fff; 
+    border-color: var(--primary); 
 }
-.cat-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
 .item-grid { 
     display: grid; 
     grid-template-columns: repeat(2, 1fr); 
-    gap: 12px; 
+    gap: 12px;
     overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
 }
+
 .item-card {
-    background: var(--card-inner); border: 2px solid transparent; border-radius: 16px; padding: 15px 10px; text-align: center; cursor: pointer;
+    background: var(--card-inner); 
+    border: 2px solid transparent; 
+    border-radius: 16px; 
+    padding: 15px 10px; 
+    text-align: center; 
+    cursor: pointer;
+    flex-shrink: 0;
 }
-.item-card.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.2); }
 
-.dialpad-panel { display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
-.display-box { background: #090d16; border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: right; margin-bottom: 0; }
-.display-label { font-size: 0.85rem; color: var(--primary); font-weight: 600; margin-bottom: 10px; }
-.display-value-wrap { margin-top: 12px; display: flex; align-items: baseline; justify-content: flex-end; gap: 10px; }
-.display-value { font-size: 2.8rem; font-weight: 700; color: var(--accent); }
-.unit { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+.item-card.selected { 
+    border-color: var(--primary); 
+    background: rgba(99, 102, 241, 0.2); 
+}
 
-.dialpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+.dialpad-panel { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.display-box { 
+    background: #090d16; 
+    border: 1px solid var(--border); 
+    border-radius: 16px; 
+    padding: 20px; 
+    text-align: right;
+    flex-shrink: 0;
+    margin-bottom: 15px;
+}
+
+.display-label { 
+    font-size: 0.85rem; 
+    color: var(--primary); 
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.display-value-wrap {
+    margin-top: 12px;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.display-value { 
+    font-size: 2.8rem; 
+    font-weight: 700; 
+    color: var(--accent); 
+}
+
+.unit {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.dialpad-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px; 
+    margin: 15px 0;
+    flex-shrink: 0;
+}
+
 .btn-num {
-    background: var(--card-inner); border: 1px solid var(--border); color: var(--text-main); font-size: 1.3rem; font-weight: 600; padding: 16px 0; border-radius: 12px; cursor: pointer;
+    background: var(--card-inner); 
+    border: 1px solid var(--border); 
+    color: var(--text-main); 
+    font-size: 1.3rem; 
+    font-weight: 600; 
+    padding: 16px 0; 
+    border-radius: 12px; 
+    cursor: pointer;
 }
-.btn-submit { width: 100%; background: var(--primary); color: #fff; border: none; padding: 16px; font-size: 1rem; border-radius: 12px; cursor: pointer; }
 
-/* Admin Dashboard CSS */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 25px; }
-@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-
-.stat-card {
-    background: var(--card-inner); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px;
+.btn-num.btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--danger);
 }
-.stat-icon { font-size: 1.8rem; color: var(--primary); }
-.profit-card .stat-icon { color: var(--accent); }
-.stat-card h4 { font-size: 0.8rem; color: var(--text-muted); }
-.stat-card span { font-size: 1.3rem; font-weight: 700; }
 
-.admin-section { padding: 0 25px 25px 25px; }
-.admin-section h3 { margin-bottom: 15px; font-size: 1.1rem; }
-.table-responsive { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; background: var(--card-inner); border-radius: 12px; overflow: hidden; }
-th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-th { background: rgba(255, 255, 255, 0.03); color: var(--text-muted); }
-input[type="number"] {
-    background: #090d16; border: 1px solid var(--border); color: var(--accent); width: 80px; padding: 6px; border-radius: 6px; font-weight: 600;
+.btn-num.btn-warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
 }
-.btn-danger-reset { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); padding: 8px 16px; border-radius: 8px; cursor: pointer; }
 
-/* ===================== Business Day Badge (index.html) ===================== */
+.btn-submit { 
+    width: 100%; 
+    background: var(--primary); 
+    color: #fff; 
+    border: none; 
+    padding: 16px; 
+    font-size: 1rem; 
+    border-radius: 12px; 
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 10px;
+}
+
 .biz-day-badge {
-    display: block; margin-top: 4px; font-size: 0.75rem; color: var(--text-muted);
-    font-weight: 600; letter-spacing: 0.02em;
+    display: block; 
+    margin-top: 4px; 
+    font-size: 0.75rem; 
+    color: var(--text-muted);
+    font-weight: 600; 
+    letter-spacing: 0.02em;
 }
 
-/* ===================== Tabs (admin.html) ===================== */
-.tab-bar {
-    display: flex; gap: 4px; padding: 15px 25px 0; border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-}
-.tab-btn {
-    background: transparent; border: none; color: var(--text-muted); font-weight: 600; font-size: 0.85rem;
-    padding: 12px 16px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap;
-    display: flex; align-items: center; gap: 8px; transition: color 0.15s, border-color 0.15s;
-}
-.tab-btn:hover { color: var(--text-main); }
-.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* ===================== Clock Card (Dashboard) ===================== */
-.clock-card {
-    margin: 25px 25px 0; background: var(--card-inner); border: 1px solid var(--border); border-radius: 16px;
-    padding: 18px 25px; display: flex; align-items: center; gap: 25px; flex-wrap: wrap;
-}
-.clock-label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
-.clock-value { font-size: 1.3rem; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
-.clock-divider { width: 1px; height: 34px; background: var(--border); }
-@media (max-width: 640px) { .clock-divider { display: none; } }
-
-/* ===================== Add Item Form ===================== */
-.add-item-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.add-item-form input {
-    background: #090d16; border: 1px solid var(--border); color: var(--text-main);
-    padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; flex: 1; min-width: 140px;
-}
-.add-item-btn { background: var(--primary); border-color: var(--primary); white-space: nowrap; }
-
-/* Table text inputs (name/category editing) */
-.name-input, .cat-input {
-    background: transparent; border: 1px solid transparent; color: var(--text-main);
-    font-weight: 600; padding: 6px; border-radius: 6px; width: 130px;
-}
-.name-input:hover, .cat-input:hover, .name-input:focus, .cat-input:focus {
-    background: #090d16; border-color: var(--border);
-}
-.btn-icon-danger {
-    background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3);
-    width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
-}
-.btn-icon-danger:hover { background: rgba(239, 68, 68, 0.3); }
-
-.empty-state { grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px 20px; font-size: 0.9rem; }
-
-/* ===================== Sales History Calendar ===================== */
-.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-.cal-header h3 { font-size: 1rem; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-.cal-weekday { text-align: center; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; padding-bottom: 6px; }
-.cal-cell {
-    aspect-ratio: 1 / 0.85; background: var(--card-inner); border: 1px solid var(--border); border-radius: 10px;
-    padding: 6px; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.75rem;
-}
-.cal-cell.empty { background: transparent; border: none; }
-.cal-cell.has-data { border-color: var(--accent); background: rgba(16, 185, 129, 0.1); cursor: pointer; }
-.cal-cell.has-data:hover { background: rgba(16, 185, 129, 0.2); }
-.cal-cell.is-today { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
-.cal-daynum { font-weight: 700; color: var(--text-main); }
-.cal-sales { color: var(--accent); font-weight: 700; font-size: 0.68rem; }
-.cal-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 12px; }
-.history-detail-panel {
-    margin-top: 20px; background: var(--card-inner); border: 1px solid var(--border); border-radius: 16px; padding: 20px;
-}
-.history-detail-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-
-/* ===================== Backup & Sync Tab ===================== */
-.section-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
-.backup-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.file-label { display: inline-flex; align-items: center; gap: 8px; }
-.sync-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.sync-row input {
-    flex: 1; min-width: 220px; background: #090d16; border: 1px solid var(--border); color: var(--text-main);
-    padding: 10px 12px; border-radius: 8px; font-size: 0.85rem;
-}
-.sync-status { margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-.dot-green { background: var(--accent); }
-.dot-red { background: var(--danger); }
-.dot-gray { background: var(--text-muted); }
-
-.section-actions { text-align: right; padding: 0 25px 25px; margin-top: 15px; }
-.icon-wrapper { font-size: 1.4rem; color: var(--primary); margin-bottom: 8px; }
-
-/* Consistent icon+text alignment on every button-like element */
-.admin-link-btn, .excel-btn, .btn-danger-reset, .add-item-btn, .file-label {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-}
-
-/* ======================================================================
-   MOBILE RESPONSIVE — applies to both index.html and admin.html
-   ====================================================================== */
-@media (max-width: 600px) {
-    body { padding: 0; align-items: flex-start; }
-    .pos-container, .admin-container { border-radius: 0; max-width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
-
-    .pos-header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
-    .pos-header h2 { font-size: 1.05rem; }
-    .pos-header > div:first-child { flex: 1; min-width: 0; }
-
-    .pos-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; }
-
-    .panel { padding: 15px; display: flex; flex-direction: column; }
-    .item-panel { 
-        border-right: none; 
-        border-bottom: 1px solid var(--border); 
-        flex: 0 1 auto;
-        overflow-y: auto;
-        max-height: 50vh;
+/* ===============================================
+   MOBILE RESPONSIVE
+   =============================================== */
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        align-items: flex-start;
     }
-    .dialpad-panel { 
+
+    .pos-container {
+        max-width: 100%;
+        border-radius: 0;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile */
+    }
+
+    .pos-header {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pos-header h2 {
+        font-size: 1.05rem;
+    }
+
+    .pos-header > div:first-child {
         flex: 1;
-        overflow-y: auto;
-        min-height: 0;
+        min-width: 0;
     }
 
-    .category-bar, .tab-bar { -webkit-overflow-scrolling: touch; }
-    .tab-bar { padding: 10px 12px 0; }
-    .tab-btn { padding: 10px 12px; font-size: 0.78rem; gap: 6px; }
+    .pos-body {
+        flex-direction: column;
+        gap: 0;
+    }
 
-    .item-grid { 
-        gap: 8px; 
-        overflow-y: auto;
+    .item-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex: 0 0 45%;
+        padding: 15px;
+        overflow: hidden;
+    }
+
+    .panel-header {
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+
+    .panel-header h3 {
+        font-size: 1rem;
+    }
+
+    .category-bar {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+    }
+
+    .item-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-    .item-card { padding: 12px 8px; }
-    .item-card h4 { font-size: 0.85rem; }
-    
-    /* Mobile adjustments for proper display */
-    .item-panel .panel-header {
-        margin-bottom: 12px;
-    }
-    .item-panel .category-bar {
-        margin-bottom: 12px;
+        gap: 8px;
     }
 
-    .display-box { padding: 14px; margin-bottom: 10px; }
-    .display-value { font-size: 2rem; }
-    .display-value-wrap { margin-top: 8px; }
-    .dialpad-grid { gap: 6px; margin: 10px 0; }
-    .btn-num { padding: 12px 0; font-size: 1.1rem; }
-    .btn-submit { padding: 14px; font-size: 0.95rem; }
-
-    .stats-grid { padding: 15px; gap: 10px; }
-    .stat-card { padding: 14px; gap: 10px; }
-    .stat-card span { font-size: 1.1rem; }
-
-    .clock-card { margin: 15px; padding: 16px; flex-direction: column; align-items: flex-start; gap: 14px; }
-
-    .admin-section { padding: 0 15px 20px; }
-    .add-item-form { flex-direction: column; align-items: stretch; }
-    .add-item-form input { min-width: 100%; }
-
-    .sync-row { flex-direction: column; }
-    .sync-row input { min-width: 100%; }
-
-    .backup-actions { flex-direction: column; }
-    .backup-actions .admin-link-btn, .backup-actions .file-label { width: 100%; }
-
-    .section-actions { padding: 0 15px 20px; }
-    .section-actions .excel-btn, .section-actions .btn-danger-reset { width: 100%; }
-
-    .cal-cell { padding: 4px; font-size: 0.65rem; }
-    .cal-daynum { font-size: 0.72rem; }
-    .cal-sales { font-size: 0.58rem; }
-    .cal-weekday { font-size: 0.6rem; }
-
-    .history-detail-header { flex-direction: column; align-items: flex-start; }
-    .history-detail-header button { width: 100%; }
-
-    /* Table -> stacked cards on small screens */
-    .table-responsive table, .table-responsive thead, .table-responsive tbody,
-    .table-responsive th, .table-responsive td, .table-responsive tr { display: block; }
-    .table-responsive thead { display: none; }
-    .table-responsive tr {
-        background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px;
-        margin-bottom: 12px; padding: 6px 14px;
+    .item-card {
+        padding: 12px 8px;
     }
-    .table-responsive td {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 9px 0; border-bottom: 1px dashed var(--border); font-size: 0.85rem; text-align: right;
+
+    .item-card h4 {
+        font-size: 0.85rem;
     }
-    .table-responsive td:last-child { border-bottom: none; }
-    .table-responsive td::before {
-        content: attr(data-label); font-weight: 600; color: var(--text-muted); text-align: left; padding-right: 10px;
+
+    .dialpad-panel {
+        flex: 1;
+        padding: 15px;
     }
-    .table-responsive td.no-label { justify-content: center; padding: 10px 0; }
-    .table-responsive td.no-label::before { content: none; }
-    .table-responsive td input[type="number"], .table-responsive td input[type="text"] {
-        width: auto; max-width: 130px; text-align: right;
+
+    .display-box {
+        padding: 14px;
+        margin-bottom: 10px;
+    }
+
+    .display-value {
+        font-size: 2rem;
+    }
+
+    .dialpad-grid {
+        gap: 6px;
+        margin: 10px 0;
+    }
+
+    .btn-num {
+        padding: 12px 0;
+        font-size: 1.1rem;
+    }
+
+    .btn-submit {
+        padding: 14px;
+        font-size: 0.95rem;
+        margin-top: 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .pos-container {
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    .pos-header {
+        padding: 12px 14px;
+    }
+
+    .item-panel {
+        flex: 0 0 42%;
+    }
+
+    .dialpad-panel {
+        flex: 1;
     }
 }
 
 @media (max-width: 360px) {
-    .item-grid { grid-template-columns: 1fr; }
+    .item-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===============================================
+   ADMIN DASHBOARD STYLES (basic)
+   =============================================== */
+.admin-container {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    padding: 25px;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.stat-card {
+    background: var(--card-inner);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    font-size: 1.8rem;
+    color: var(--primary);
+}
+
+.profit-card .stat-icon {
+    color: var(--accent);
+}
+
+.stat-card h4 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.stat-card span {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px 20px;
+    font-size: 0.9rem;
 }
