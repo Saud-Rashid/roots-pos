@@ -15,17 +15,17 @@
     box-sizing: border-box; 
     margin: 0; 
     padding: 0; 
-    font-family: 'Plus Jakarta Sans', sans-serif; 
 }
 
 html, body {
     height: 100%;
     width: 100%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
 }
 
 body {
-    background-color: var(--bg-body);
-    color: var(--text-main);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,10 +33,12 @@ body {
     overflow: hidden;
 }
 
+/* ================================
+   DESKTOP LAYOUT
+   ================================ */
 .pos-container {
     width: 100%;
     max-width: 1000px;
-    height: 100vh;
     background: var(--card-bg);
     border-radius: 24px;
     border: 1px solid var(--border);
@@ -44,6 +46,7 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    height: calc(100vh - 40px);
 }
 
 .pos-header {
@@ -54,6 +57,7 @@ body {
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
+    height: auto;
 }
 
 .admin-link-btn, .excel-btn {
@@ -67,71 +71,60 @@ body {
     cursor: pointer;
 }
 
-.excel-btn { background: #16a34a; border: none; margin-right: 8px; }
-
-.pos-body { 
-    display: flex;
+.pos-body {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
     flex: 1;
     overflow: hidden;
-    gap: 0;
 }
 
-@media (max-width: 768px) { 
-    .pos-body { 
-        flex-direction: column;
-    } 
-}
-
-.panel { 
+.panel {
+    padding: 25px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-.item-panel { 
+.item-panel {
     border-right: 1px solid var(--border);
-    flex: 1.2;
-    padding: 25px;
-    overflow: hidden;
 }
 
-.panel-header { 
-    margin-bottom: 15px; 
+.panel-header {
+    margin-bottom: 15px;
     flex-shrink: 0;
 }
 
-.category-bar { 
-    display: flex; 
-    gap: 8px; 
-    overflow-x: auto; 
-    padding-bottom: 12px; 
-    margin-bottom: 15px; 
+.category-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
     flex-shrink: 0;
     -webkit-overflow-scrolling: touch;
 }
 
 .cat-btn {
-    background: var(--card-inner); 
-    color: var(--text-muted); 
+    background: var(--card-inner);
+    color: var(--text-muted);
     border: 1px solid var(--border);
-    padding: 8px 14px; 
-    border-radius: 20px; 
-    font-size: 0.8rem; 
-    font-weight: 600; 
-    white-space: nowrap; 
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
-    flex-shrink: 0;
 }
 
-.cat-btn.active { 
-    background: var(--primary); 
-    color: #fff; 
-    border-color: var(--primary); 
+.cat-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
 }
 
-.item-grid { 
-    display: grid; 
-    grid-template-columns: repeat(2, 1fr); 
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     overflow-y: auto;
     flex: 1;
@@ -139,43 +132,36 @@ body {
 }
 
 .item-card {
-    background: var(--card-inner); 
-    border: 2px solid transparent; 
-    border-radius: 16px; 
-    padding: 15px 10px; 
-    text-align: center; 
+    background: var(--card-inner);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 15px 10px;
+    text-align: center;
     cursor: pointer;
-    flex-shrink: 0;
 }
 
-.item-card.selected { 
-    border-color: var(--primary); 
-    background: rgba(99, 102, 241, 0.2); 
+.item-card.selected {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.2);
 }
 
-.dialpad-panel { 
-    display: flex; 
-    flex-direction: column; 
+.dialpad-panel {
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    flex: 1;
-    padding: 25px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
-.display-box { 
-    background: #090d16; 
-    border: 1px solid var(--border); 
-    border-radius: 16px; 
-    padding: 20px; 
+.display-box {
+    background: #090d16;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
     text-align: right;
-    flex-shrink: 0;
-    margin-bottom: 15px;
 }
 
-.display-label { 
-    font-size: 0.85rem; 
-    color: var(--primary); 
+.display-label {
+    font-size: 0.85rem;
+    color: var(--primary);
     font-weight: 600;
     margin-bottom: 10px;
 }
@@ -188,10 +174,10 @@ body {
     gap: 10px;
 }
 
-.display-value { 
-    font-size: 2.8rem; 
-    font-weight: 700; 
-    color: var(--accent); 
+.display-value {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--accent);
 }
 
 .unit {
@@ -200,78 +186,65 @@ body {
     font-weight: 500;
 }
 
-.dialpad-grid { 
-    display: grid; 
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 10px; 
+.dialpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
     margin: 15px 0;
-    flex-shrink: 0;
 }
 
 .btn-num {
-    background: var(--card-inner); 
-    border: 1px solid var(--border); 
-    color: var(--text-main); 
-    font-size: 1.3rem; 
-    font-weight: 600; 
-    padding: 16px 0; 
-    border-radius: 12px; 
+    background: var(--card-inner);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    font-size: 1.3rem;
+    font-weight: 600;
+    padding: 16px 0;
+    border-radius: 12px;
     cursor: pointer;
 }
 
-.btn-num.btn-danger {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-    color: var(--danger);
-}
-
-.btn-num.btn-warning {
-    background: rgba(251, 191, 36, 0.1);
-    border-color: rgba(251, 191, 36, 0.3);
-}
-
-.btn-submit { 
-    width: 100%; 
-    background: var(--primary); 
-    color: #fff; 
-    border: none; 
-    padding: 16px; 
-    font-size: 1rem; 
-    border-radius: 12px; 
+.btn-submit {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    font-size: 1rem;
+    border-radius: 12px;
     cursor: pointer;
-    flex-shrink: 0;
-    margin-top: 10px;
 }
 
 .biz-day-badge {
-    display: block; 
-    margin-top: 4px; 
-    font-size: 0.75rem; 
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    font-weight: 600; 
+    font-weight: 600;
     letter-spacing: 0.02em;
 }
 
-/* ===============================================
-   MOBILE RESPONSIVE
-   =============================================== */
+/* ================================
+   MOBILE LAYOUT (CRITICAL)
+   ================================ */
 @media (max-width: 768px) {
     body {
         padding: 0;
-        align-items: flex-start;
+        align-items: stretch;
     }
 
     .pos-container {
-        max-width: 100%;
         border-radius: 0;
+        max-width: 100%;
         height: 100vh;
-        height: 100dvh; /* Dynamic viewport height for mobile */
+        height: 100dvh;
     }
 
     .pos-header {
         padding: 14px 16px;
         flex-wrap: wrap;
         gap: 10px;
+        height: auto;
     }
 
     .pos-header h2 {
@@ -283,36 +256,42 @@ body {
         min-width: 0;
     }
 
+    /* CRITICAL: Body must be column and fixed heights */
     .pos-body {
+        display: flex;
         flex-direction: column;
-        gap: 0;
+        grid-template-columns: none;
+        flex: 1;
     }
 
+    /* ITEM PANEL - Exactly 45% */
     .item-panel {
         border-right: none;
         border-bottom: 1px solid var(--border);
-        flex: 0 0 45%;
         padding: 15px;
+        /* Fixed height calculation */
+        height: 45vh;
+        height: 45dvh;
         overflow: hidden;
+        flex-shrink: 0;
     }
 
     .panel-header {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         font-size: 0.95rem;
     }
 
-    .panel-header h3 {
-        font-size: 1rem;
-    }
-
     .category-bar {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         padding-bottom: 8px;
     }
 
     .item-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
+        /* Let grid scroll internally */
+        height: calc(45dvh - 90px);
+        overflow-y: auto;
     }
 
     .item-card {
@@ -323,9 +302,12 @@ body {
         font-size: 0.85rem;
     }
 
+    /* DIALPAD PANEL - Takes rest */
     .dialpad-panel {
-        flex: 1;
         padding: 15px;
+        /* Takes remaining space */
+        flex: 1;
+        overflow-y: auto;
     }
 
     .display-box {
@@ -339,7 +321,7 @@ body {
 
     .dialpad-grid {
         gap: 6px;
-        margin: 10px 0;
+        margin: 8px 0;
     }
 
     .btn-num {
@@ -360,16 +342,12 @@ body {
         height: 100dvh;
     }
 
-    .pos-header {
-        padding: 12px 14px;
-    }
-
     .item-panel {
-        flex: 0 0 42%;
+        height: 45dvh;
     }
 
-    .dialpad-panel {
-        flex: 1;
+    .item-grid {
+        height: calc(45dvh - 85px);
     }
 }
 
@@ -379,9 +357,9 @@ body {
     }
 }
 
-/* ===============================================
-   ADMIN DASHBOARD STYLES (basic)
-   =============================================== */
+/* ================================
+   ADMIN DASHBOARD (basic styles)
+   ================================ */
 .admin-container {
     width: 100%;
     max-width: 1000px;
