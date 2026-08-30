@@ -74,6 +74,24 @@ function selectItem(element, id) {
     element.classList.add('selected');
     selectedItem = menuData.find(item => item.id === id);
     document.getElementById('selected-item-label').innerText = `Selected: ${selectedItem.name}`;
+    clearDisplay();
+    openQuantityScreen();
+}
+
+function openQuantityScreen() {
+    const screen = document.getElementById('quantity-screen');
+    if (!screen) return;
+    screen.classList.add('is-open');
+    screen.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('quantity-screen-open');
+}
+
+function closeQuantityScreen() {
+    const screen = document.getElementById('quantity-screen');
+    if (!screen) return;
+    screen.classList.remove('is-open');
+    screen.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('quantity-screen-open');
 }
 
 function appendNum(num) {
@@ -84,6 +102,10 @@ function appendNum(num) {
 function clearDisplay() { quantity = '0'; updateDisplay(); }
 function deleteLast() { quantity = quantity.length > 1 ? quantity.slice(0, -1) : '0'; updateDisplay(); }
 function updateDisplay() { document.getElementById('quantity-display').innerText = quantity; }
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeQuantityScreen();
+});
 
 function submitOrder() {
     if (!selectedItem) return alert('⚠️ দয়া করে একটি আইটেম সিলেক্ট করুন!');
@@ -110,6 +132,7 @@ function submitOrder() {
 
     alert(`✅ অর্ডার সফল হয়েছে!\n\n🍹 Item: ${selectedItem.name}\n🥤 Quantity: ${quantity} Glasses`);
     clearDisplay();
+    closeQuantityScreen();
 }
 
 // ============================================================

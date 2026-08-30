@@ -89,6 +89,15 @@ body {
     border-right: 1px solid var(--border);
 }
 
+/* The menu remains full screen until an item is chosen. */
+.pos-body {
+    grid-template-columns: 1fr;
+}
+
+.item-panel {
+    border-right: none;
+}
+
 .panel-header {
     margin-bottom: 15px;
     flex-shrink: 0;
@@ -146,9 +155,44 @@ body {
 }
 
 .dialpad-panel {
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: space-between;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    padding: clamp(20px, 5vw, 56px);
+    background: var(--bg-body);
+    overflow-y: auto;
+}
+
+.dialpad-panel.is-open {
+    display: flex;
+}
+
+.quantity-screen-open {
+    overflow: hidden;
+}
+
+.quantity-screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.back-to-menu-btn {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    background: var(--card-inner);
+    color: var(--text-main);
+    font: inherit;
+    cursor: pointer;
 }
 
 .display-box {
@@ -256,24 +300,15 @@ body {
         min-width: 0;
     }
 
-    /* CRITICAL: Body must be column and fixed heights */
+    /* The menu fills the available space until an item is selected. */
     .pos-body {
-        display: flex;
-        flex-direction: column;
-        grid-template-columns: none;
         flex: 1;
     }
 
-    /* ITEM PANEL - Exactly 45% */
     .item-panel {
         border-right: none;
-        border-bottom: 1px solid var(--border);
         padding: 15px;
-        /* Fixed height calculation */
-        height: 45vh;
-        height: 45dvh;
-        overflow: hidden;
-        flex-shrink: 0;
+        height: auto;
     }
 
     .panel-header {
@@ -289,8 +324,6 @@ body {
     .item-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
-        /* Let grid scroll internally */
-        height: calc(45dvh - 90px);
         overflow-y: auto;
     }
 
@@ -302,12 +335,14 @@ body {
         font-size: 0.85rem;
     }
 
-    /* DIALPAD PANEL - Takes rest */
     .dialpad-panel {
         padding: 15px;
-        /* Takes remaining space */
-        flex: 1;
-        overflow-y: auto;
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    .quantity-screen-header {
+        margin-bottom: 16px;
     }
 
     .display-box {
@@ -342,13 +377,6 @@ body {
         height: 100dvh;
     }
 
-    .item-panel {
-        height: 45dvh;
-    }
-
-    .item-grid {
-        height: calc(45dvh - 85px);
-    }
 }
 
 @media (max-width: 360px) {

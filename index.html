@@ -37,7 +37,13 @@
                 </div>
             </section>
 
-            <section class="panel dialpad-panel">
+            <section class="panel dialpad-panel" id="quantity-screen" aria-hidden="true">
+                <div class="quantity-screen-header">
+                    <button type="button" class="back-to-menu-btn" onclick="closeQuantityScreen()">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Menu
+                    </button>
+                    <span>Set Quantity</span>
+                </div>
                 <div class="display-box">
                     <div class="display-label" id="selected-item-label">Please Select Item</div>
                     <div class="display-value-wrap">
