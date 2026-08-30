@@ -447,3 +447,281 @@ body {
     padding: 40px 20px;
     font-size: 0.9rem;
 }
+
+/* ================================
+   ADMIN DASHBOARD
+   ================================ */
+.admin-page {
+    display: block;
+    min-height: 100%;
+    padding: 20px;
+    overflow: auto;
+}
+
+.admin-container {
+    margin: 0 auto;
+    max-width: 1200px;
+    min-height: calc(100vh - 40px);
+    overflow: visible;
+}
+
+.tab-bar {
+    display: flex;
+    gap: 8px;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+    flex: 0 0 auto;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 10px 14px;
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tab-btn:hover,
+.tab-btn.active {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.55);
+    color: #fff;
+}
+
+.tab-content {
+    display: none;
+    padding: 24px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.clock-card {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 18px 24px;
+    margin: 0 24px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card-inner);
+}
+
+.clock-card > div:not(.clock-divider) {
+    display: grid;
+    gap: 6px;
+}
+
+.clock-label,
+.section-hint,
+.cal-hint {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+.clock-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.clock-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--border);
+}
+
+.section-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 24px 24px;
+}
+
+.admin-section {
+    padding: 20px;
+    margin-bottom: 18px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card-inner);
+}
+
+.admin-section h3 {
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+}
+
+.admin-section .section-hint + .admin-link-btn,
+.admin-section .section-hint + .backup-actions,
+.admin-section .section-hint + .sync-row {
+    margin-top: 14px;
+}
+
+.add-item-form,
+.sync-row,
+.backup-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.add-item-form input,
+.sync-row input,
+table input {
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 11px;
+    background: #0d1422;
+    color: var(--text-main);
+    font: inherit;
+}
+
+.add-item-form input { flex: 1 1 160px; }
+.add-item-form input[type="number"] { flex-basis: 105px; }
+.sync-row input { flex: 1 1 300px; }
+.add-item-btn { white-space: nowrap; }
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+}
+
+th {
+    background: #111827;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(255, 255, 255, 0.025); }
+table input { width: 100%; min-width: 110px; padding: 8px; }
+.name-input { min-width: 155px; }
+.cat-input { min-width: 135px; }
+
+.badge {
+    display: inline-block;
+    min-width: 28px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.2);
+    color: #c7d2fe;
+    text-align: center;
+    font-weight: 700;
+}
+
+.btn-icon-danger,
+.btn-danger-reset {
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 9px;
+    padding: 9px 11px;
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cal-header,
+.history-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.cal-weekday {
+    padding: 6px;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.cal-cell {
+    min-height: 82px;
+    padding: 9px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #111827;
+}
+
+.cal-cell.has-data { cursor: pointer; border-color: var(--primary); background: rgba(99, 102, 241, 0.14); }
+.cal-cell.is-today { box-shadow: inset 0 0 0 1px var(--accent); }
+.cal-daynum { display: block; font-weight: 700; }
+.cal-sales { display: block; margin-top: 7px; color: var(--accent); font-size: 0.78rem; font-weight: 700; }
+.cal-hint { margin-top: 14px; }
+
+.history-detail-panel {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.sync-status { min-height: 1.4em; margin-top: 10px; color: var(--text-muted); font-size: 0.85rem; }
+.file-label { display: inline-flex; align-items: center; gap: 7px; }
+
+@media (max-width: 768px) {
+    .admin-page { padding: 0; }
+    .admin-container { min-height: 100dvh; border: 0; border-radius: 0; }
+    .admin-container .pos-header { padding: 14px 16px; }
+    .admin-container .pos-header > div { display: flex; gap: 8px; }
+    .admin-container .admin-link-btn { padding: 8px 10px; }
+    .tab-bar { padding: 10px 12px; }
+    .tab-content { padding: 14px; }
+    .clock-card { margin: 0 14px; padding: 16px; gap: 16px; align-items: flex-start; flex-direction: column; }
+    .clock-divider { width: 100%; height: 1px; }
+    .stats-grid { padding: 14px; gap: 10px; }
+    .stat-card { padding: 14px; gap: 10px; }
+    .stat-icon { font-size: 1.35rem; }
+    .stat-card span { font-size: 1.05rem; }
+    .section-actions { padding: 0 14px 14px; }
+    .admin-section { padding: 14px; }
+    .cal-grid { gap: 4px; }
+    .cal-weekday { font-size: 0.68rem; padding: 4px 0; }
+    .cal-cell { min-height: 54px; padding: 6px; font-size: 0.8rem; }
+    .cal-sales { font-size: 0.65rem; margin-top: 3px; }
+}
+
+@media (max-width: 430px) {
+    .admin-container .pos-header h2 { width: 100%; }
+    .admin-container .pos-header > div { width: 100%; }
+    .admin-container .pos-header > div .admin-link-btn { flex: 1; text-align: center; }
+    .tab-btn { padding: 9px 11px; font-size: 0.8rem; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .add-item-form > *, .sync-row > *, .backup-actions > * { width: 100%; }
+    .add-item-form input, .sync-row input { flex-basis: 100%; }
+    .history-detail-header { align-items: stretch; flex-direction: column; }
+    .history-detail-header .admin-link-btn { text-align: center; }
+}
