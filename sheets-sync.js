@@ -28,6 +28,18 @@ function clearSyncUrl() {
     localStorage.removeItem(STORAGE_KEYS.SYNC_URL);
 }
 
+// Apps Script ContentService redirects its response to a Google-hosted URL.
+// A static site cannot reliably read that cross-origin response, but a simple
+// no-cors POST is still delivered to the deployed Apps Script web app.
+function postToCloud(url, payload) {
+    return fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+    });
+}
+
 // Debounced push — called automatically whenever data changes (via storage.js's queueCloudSync)
 window.__rootsCloudSyncTrigger = function () {
     const url = getSyncUrl();
@@ -49,12 +61,7 @@ async function pushStateToCloud(url) {
                 updatedAt: new Date().toISOString()
             }
         };
-        // text/plain avoids a CORS preflight, which Apps Script web apps don't handle
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-        });
+        await postToCloud(url, payload);
         lastSyncStatus = { ok: true, time: new Date(), message: 'Synced' };
     } catch (err) {
         lastSyncStatus = { ok: false, time: new Date(), message: err.message };
@@ -86,13 +93,9 @@ async function pushDailySummaryToCloud(dateStr, totalSales, totalCost, netProfit
     const url = getSyncUrl();
     if (!url) return;
     try {
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-                action: 'appendDailySummary',
-                payload: { date: dateStr, totalSales, totalCost, netProfit }
-            })
+        await postToCloud(url, {
+            action: 'appendDailySummary',
+            payload: { date: dateStr, totalSales, totalCost, netProfit }
         });
     } catch (err) {
         console.warn('Monthly summary sync skipped (offline?):', err.message);
@@ -120,13 +123,9 @@ async function logOrderToCloud(itemName, quantity, price) {
     const url = getSyncUrl();
     if (!url) return;
     try {
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-                action: 'logOrder',
-                payload: { businessDate: getCurrentBusinessDay(), itemName, quantity, price }
-            })
+        await postToCloud(url, {
+            action: 'logOrder',
+            payload: { businessDate: getCurrentBusinessDay(), itemName, quantity, price }
         });
     } catch (err) {
         console.warn('Order audit-log sync skipped (offline?):', err.message);
@@ -135,9 +134,8 @@ async function logOrderToCloud(itemName, quantity, price) {
 
 async function testSyncConnection(url) {
     try {
-        const res = await fetch(url, { method: 'GET' });
-        const json = await res.json();
-        return { success: true, hasData: !!json.data };
+        await postToCloud(url, { action: 'ping' });
+        return { success: true };
     } catch (err) {
         return { success: false, error: err.message };
     }
@@ -163,9 +161,5 @@ async function verifyPasswordOnServer(url, hash) {
 }
 
 async function setPasswordOnServer(url, hash) {
-    await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'setPassword', payload: { hash } })
-    });
+    await postToCloud(url, { action: 'setPassword', payload: { hash } });
 }

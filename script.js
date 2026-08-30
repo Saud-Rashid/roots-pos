@@ -453,7 +453,7 @@ async function handleTestSyncConnection() {
     statusEl.innerHTML = `<span class="dot dot-gray"></span> Testing...`;
     const result = await testSyncConnection(url);
     if (result.success) {
-        alert('✅ Connection সফল! Google Sheet এর সাথে যোগাযোগ হচ্ছে।');
+        alert('✅ Test request পাঠানো হয়েছে! Google Sheet খুলে পরের অর্ডারের data State বা OrderLog sheet-এ আসে কিনা দেখুন।');
     } else {
         alert('❌ Connection ব্যর্থ: ' + result.error + '\n\nSETUP_GUIDE.md অনুযায়ী Apps Script deploy করা আছে কিনা check করুন।');
     }
