@@ -105,6 +105,27 @@ function doPost(e) {
       var sheet = ss.getSheetByName('State') || ss.insertSheet('State');
       sheet.getRange(1, 1).setValue(JSON.stringify(data.payload));
       sheet.getRange(1, 2).setValue(new Date().toISOString());
+
+      // Readable live menu report — rebuilt from the latest POS state.
+      var menuRows = (data.payload.menuData || []).map(function(item) {
+        var sold = Number(item.sold) || 0;
+        var price = Number(item.price) || 0;
+        var cost = Number(item.cost) || 0;
+        return [item.id, item.name, item.category, cost, price, sold,
+          sold * price, sold * cost, (sold * price) - (sold * cost)];
+      });
+      writeTable(ss, 'Menu',
+        ['Item ID', 'Item Name', 'Category', 'Cost (TK)', 'Price (TK)', 'Sold', 'Sales (TK)', 'Making Cost (TK)', 'Profit (TK)'],
+        menuRows);
+
+      // One row for every completed business day saved by the POS.
+      var historyRows = (data.payload.salesHistory || []).map(function(day) {
+        return [day.date, day.totalGlasses, day.totalSales, day.totalCost, day.totalProfit, day.archivedAt];
+      });
+      writeTable(ss, 'Sales History',
+        ['Business Date', 'Glasses Sold', 'Sales (TK)', 'Making Cost (TK)', 'Profit (TK)', 'Archived At'],
+        historyRows);
+
       return jsonOut({ success: true });
     }
 
@@ -189,6 +210,20 @@ function getCycleSheetName(dateStr) {
   }
   var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   return monthNames[cycleMonth - 1] + ' ' + cycleYear;
+}
+
+// Replaces only the data in ROOTS POS's own report tabs; the header stays readable.
+function writeTable(ss, sheetName, headers, rows) {
+  var reportSheet = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
+  reportSheet.clearContents();
+  reportSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  if (rows.length) reportSheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  reportSheet.setFrozenRows(1);
+  reportSheet.getRange(1, 1, 1, headers.length)
+    .setFontWeight('bold')
+    .setBackground('#1e293b')
+    .setFontColor('#ffffff');
+  reportSheet.autoResizeColumns(1, headers.length);
 }
 
 function jsonOut(obj) {

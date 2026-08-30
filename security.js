@@ -89,8 +89,9 @@ function resetLocalAttempts() {
     localStorage.removeItem(LOCAL_LOCKOUT_KEYS.LOCK_UNTIL);
 }
 
-// ---------- Verify / Set password (server-verified when cloud sync is on) ----------
-// Returns: { success, lockedOut, minutesLeft, mode }
+// ---------- Verify / Set password ----------
+// Cloud sync must never block access to the local POS. Authentication therefore
+// remains local even when Google Sheets sync is configured.
 async function verifyAdminPassword(inputPass) {
     const localLock = getLocalLockoutStatus();
     if (localLock.lockedOut) {
@@ -98,29 +99,6 @@ async function verifyAdminPassword(inputPass) {
     }
 
     const hash = await sha256(inputPass || '');
-    const syncUrl = (typeof getSyncUrl === 'function') ? getSyncUrl() : '';
-
-    if (syncUrl) {
-        try {
-            const result = await verifyPasswordOnServer(syncUrl, hash);
-            if (result.unsupported) {
-                throw new Error('Apps Script password actions are not deployed yet');
-            }
-            if (result.success) {
-                resetLocalAttempts();
-                return { success: true, mode: 'server' };
-            }
-            if (result.lockedOut) {
-                return { success: false, lockedOut: true, minutesLeft: result.minutesLeft, mode: 'server' };
-            }
-            recordFailedAttempt();
-            return { success: false, lockedOut: false, mode: 'server' };
-        } catch (err) {
-            console.warn('Server password check failed (offline?), using local fallback:', err.message);
-            // fall through to local check below so the owner isn't locked out during a network outage
-        }
-    }
-
     const stored = await getAdminPasswordHash();
     const ok = hash === stored;
     if (ok) resetLocalAttempts(); else recordFailedAttempt();
@@ -129,12 +107,7 @@ async function verifyAdminPassword(inputPass) {
 
 async function setAdminPassword(newPass) {
     const hash = await sha256(newPass);
-    localStorage.setItem(SEC_KEYS.PASS_HASH, hash); // always keep a local fallback copy
-    const syncUrl = (typeof getSyncUrl === 'function') ? getSyncUrl() : '';
-    if (syncUrl) {
-        try { await setPasswordOnServer(syncUrl, hash); }
-        catch (err) { console.warn('Could not push new password to server:', err.message); }
-    }
+    localStorage.setItem(SEC_KEYS.PASS_HASH, hash);
 }
 
 function isSessionValid() {
