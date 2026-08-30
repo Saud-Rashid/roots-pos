@@ -142,3 +142,30 @@ async function testSyncConnection(url) {
         return { success: false, error: err.message };
     }
 }
+
+// ---------- Server-Side Password Protection ----------
+// Sends only a SHA-256 hash (never the raw password) and lets the Apps Script
+// server do the actual comparison + rate-limit tracking — see security.js.
+async function verifyPasswordOnServer(url, hash) {
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'verifyPassword', payload: { hash } })
+    });
+    const json = await res.json();
+    if (json.lockedOut) {
+        const minutesLeft = json.lockUntil
+            ? Math.max(1, Math.ceil((new Date(json.lockUntil) - Date.now()) / 60000))
+            : LOCKOUT_MINUTES;
+        return { success: false, lockedOut: true, minutesLeft };
+    }
+    return { success: !!json.success, lockedOut: false };
+}
+
+async function setPasswordOnServer(url, hash) {
+    await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'setPassword', payload: { hash } })
+    });
+}

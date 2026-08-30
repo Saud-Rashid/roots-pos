@@ -188,14 +188,14 @@ function renderAdminTable() {
 
         tbody.innerHTML += `
             <tr>
-                <td><input type="text" class="name-input" value="${escapeAttr(item.name)}" onchange="updateMenuItem('${item.id}','name', this.value); renderUserMenuIfOpen();"></td>
-                <td><input type="text" class="cat-input" value="${escapeAttr(item.category)}" onchange="updateMenuItem('${item.id}','category', this.value); renderUserMenuIfOpen(); renderCategoryBarIfOpen();"></td>
-                <td><input type="number" value="${item.cost}" onchange="updateMenuItem('${item.id}','cost', this.value); renderDashboard(); renderAdminTable();"> TK</td>
-                <td><input type="number" value="${item.price}" onchange="updateMenuItem('${item.id}','price', this.value); renderDashboard(); renderAdminTable();"> TK</td>
-                <td><span class="badge">${item.sold}</span></td>
-                <td>${itemSales} TK</td>
-                <td style="color: var(--accent); font-weight: 600;">+${itemProfit} TK</td>
-                <td><button class="btn-icon-danger" onclick="handleDeleteItem('${item.id}', '${escapeAttr(item.name)}')"><i class="fa-solid fa-trash"></i></button></td>
+                <td data-label="Name"><input type="text" class="name-input" value="${escapeAttr(item.name)}" onchange="updateMenuItem('${item.id}','name', this.value); renderUserMenuIfOpen();"></td>
+                <td data-label="Category"><input type="text" class="cat-input" value="${escapeAttr(item.category)}" onchange="updateMenuItem('${item.id}','category', this.value); renderUserMenuIfOpen(); renderCategoryBarIfOpen();"></td>
+                <td data-label="Cost"><input type="number" value="${item.cost}" onchange="updateMenuItem('${item.id}','cost', this.value); renderDashboard(); renderAdminTable();"> TK</td>
+                <td data-label="Price"><input type="number" value="${item.price}" onchange="updateMenuItem('${item.id}','price', this.value); renderDashboard(); renderAdminTable();"> TK</td>
+                <td data-label="Sold"><span class="badge">${item.sold}</span></td>
+                <td data-label="Sales">${itemSales} TK</td>
+                <td data-label="Profit" style="color: var(--accent); font-weight: 600;">+${itemProfit} TK</td>
+                <td class="no-label"><button class="btn-icon-danger" onclick="handleDeleteItem('${item.id}', '${escapeAttr(item.name)}')"><i class="fa-solid fa-trash"></i></button></td>
             </tr>
         `;
     });
@@ -298,10 +298,10 @@ function showHistoryDetail(dateStr) {
 
     let rows = entry.items.filter(i => i.sold > 0).map(i => `
         <tr>
-            <td>${escapeHTML(i.name)}</td>
-            <td>${i.sold}</td>
-            <td>${i.sold * i.price} TK</td>
-            <td style="color: var(--accent);">+${(i.sold * i.price) - (i.sold * i.cost)} TK</td>
+            <td data-label="Item">${escapeHTML(i.name)}</td>
+            <td data-label="Sold">${i.sold}</td>
+            <td data-label="Sales">${i.sold * i.price} TK</td>
+            <td data-label="Profit" style="color: var(--accent);">+${(i.sold * i.price) - (i.sold * i.cost)} TK</td>
         </tr>
     `).join('');
 
@@ -401,17 +401,25 @@ function updateSyncStatusUI() {
     }
 }
 
-function handleSaveSyncUrl() {
+async function handleSaveSyncUrl() {
     const url = document.getElementById('sync-url-input').value.trim();
     if (!url) {
         clearSyncUrl();
         updateSyncStatusUI();
-        alert('☁️ Cloud sync বন্ধ করা হয়েছে। Local storage এ ডাটা থাকবে।');
+        alert('☁️ Cloud sync বন্ধ করা হয়েছে। Local storage এ ডাটা থাকবে (password check ও local এ ফিরে যাবে)।');
         return;
     }
     setSyncUrl(url);
+    // Push the current local password hash up so the server becomes the source of truth —
+    // otherwise the server's default ("admin123") could mismatch a password already changed locally.
+    try {
+        const currentHash = await getAdminPasswordHash();
+        await setPasswordOnServer(url, currentHash);
+    } catch (err) {
+        console.warn('Password not yet pushed to server (will retry on next change):', err.message);
+    }
     updateSyncStatusUI();
-    alert('✅ Sync URL সেভ হয়েছে! এখন থেকে সব পরিবর্তন cloud এ auto-sync হবে।');
+    alert('✅ Sync URL সেভ হয়েছে! এখন থেকে সব ডাটা cloud এ sync হবে, এবং password check ও server-side (অনেক বেশি secure) হয়ে গেছে।');
     window.__rootsCloudSyncTrigger();
 }
 

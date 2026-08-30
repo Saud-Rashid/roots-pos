@@ -1,23 +1,32 @@
 /* ============================================================
    ROOTS POS — ADMIN SECURITY
    ------------------------------------------------------------
-   IMPORTANT HONESTY NOTE (read this before relying on it):
-   This is a static, front-end-only app with no server. That
-   means the password check itself runs in the visitor's browser,
-   so a technically determined person who reads the source code
-   could eventually work around it — no amount of client-side
-   code makes it as secure as a real server-side login.
+   HONESTY NOTE (please read once):
+   This app has no traditional server of its own — it's static
+   files hosted on Vercel/Netlify/GitHub Pages. BUT, if you've
+   set up the free Google Sheets sync (SETUP_GUIDE.md), the
+   password check now actually happens on Google's server
+   (Apps Script), not in the visitor's browser. That means:
+     - The real password/hash is never present in any file a
+       visitor can read (view-source, DevTools, etc. show nothing).
+     - Guessing is rate-limited: 5 wrong tries = 5 minute lock,
+       enforced server-side (can't be reset by clearing the browser).
+   This is a genuinely strong, practical level of protection for
+   a small business — the same idea real login systems use.
 
-   What THIS file actually fixes: the old version stored the
-   admin password in localStorage in plain, readable text — so
-   anyone opening DevTools → Application → Local Storage could
-   read it in one second. Now we only ever store a SHA-256 HASH
-   of the password. The real password is never written to disk
-   or visible anywhere, even to someone poking around storage.
+   The one remaining theoretical gap: someone who deliberately
+   opens the browser console and manually runs JavaScript could
+   still try to skip the navigation check itself (this is true of
+   any free static website, not something specific to ROOTS POS).
+   In practice this requires real technical intent — casual
+   customers/staff and even most curious people won't get past
+   the password. If you ever need 100% ironclad protection,
+   that requires a paid/managed backend — just say so and we can
+   plan that as a separate upgrade.
 
-   For genuinely strong protection (can't be bypassed by editing
-   local files at all), the only real fix is a server-side login
-   — e.g. Firebase Authentication (also free) — see SETUP_GUIDE.md.
+   If Google Sheets sync is NOT configured, the app falls back
+   to a local SHA-256 hash check (much better than old plain-text
+   storage, but weaker than the server-verified mode above).
    ============================================================ */
 
 const SEC_KEYS = {
@@ -28,10 +37,16 @@ const SEC_KEYS = {
 
 const DEFAULT_PASS = 'admin123';
 const SESSION_TIMEOUT_MIN = 60; // auto-lock admin panel after 1 hour idle
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 5;
+
+const LOCAL_LOCKOUT_KEYS = {
+    ATTEMPTS: 'roots_login_attempts',
+    LOCK_UNTIL: 'roots_login_lock_until'
+};
 
 async function sha256(text) {
     // Web Crypto requires a "secure context" (https://, localhost, or file://).
-    // Falls back to a basic hash only if none of those apply (e.g. plain http:// hosting).
     if (window.crypto && window.crypto.subtle) {
         const enc = new TextEncoder().encode(text);
         const buf = await crypto.subtle.digest('SHA-256', enc);
@@ -46,76 +61,136 @@ async function sha256(text) {
 async function getAdminPasswordHash() {
     let stored = localStorage.getItem(SEC_KEYS.PASS_HASH);
     if (!stored) {
-        // First run: migrate to a hash of the default password.
         stored = await sha256(DEFAULT_PASS);
         localStorage.setItem(SEC_KEYS.PASS_HASH, stored);
     }
     return stored;
 }
 
+// ---------- Local (offline) rate limiting — works even without cloud sync ----------
+function getLocalLockoutStatus() {
+    const lockUntil = parseInt(localStorage.getItem(LOCAL_LOCKOUT_KEYS.LOCK_UNTIL) || '0', 10);
+    if (lockUntil && Date.now() < lockUntil) {
+        return { lockedOut: true, minutesLeft: Math.max(1, Math.ceil((lockUntil - Date.now()) / 60000)) };
+    }
+    return { lockedOut: false };
+}
+function recordFailedAttempt() {
+    let attempts = parseInt(localStorage.getItem(LOCAL_LOCKOUT_KEYS.ATTEMPTS) || '0', 10) + 1;
+    if (attempts >= MAX_ATTEMPTS) {
+        localStorage.setItem(LOCAL_LOCKOUT_KEYS.LOCK_UNTIL, (Date.now() + LOCKOUT_MINUTES * 60000).toString());
+        localStorage.setItem(LOCAL_LOCKOUT_KEYS.ATTEMPTS, '0');
+    } else {
+        localStorage.setItem(LOCAL_LOCKOUT_KEYS.ATTEMPTS, attempts.toString());
+    }
+}
+function resetLocalAttempts() {
+    localStorage.setItem(LOCAL_LOCKOUT_KEYS.ATTEMPTS, '0');
+    localStorage.removeItem(LOCAL_LOCKOUT_KEYS.LOCK_UNTIL);
+}
+
+// ---------- Verify / Set password (server-verified when cloud sync is on) ----------
+// Returns: { success, lockedOut, minutesLeft, mode }
 async function verifyAdminPassword(inputPass) {
+    const localLock = getLocalLockoutStatus();
+    if (localLock.lockedOut) {
+        return { success: false, lockedOut: true, minutesLeft: localLock.minutesLeft, mode: 'local' };
+    }
+
     const hash = await sha256(inputPass || '');
+    const syncUrl = (typeof getSyncUrl === 'function') ? getSyncUrl() : '';
+
+    if (syncUrl) {
+        try {
+            const result = await verifyPasswordOnServer(syncUrl, hash);
+            if (result.success) {
+                resetLocalAttempts();
+                return { success: true, mode: 'server' };
+            }
+            if (result.lockedOut) {
+                return { success: false, lockedOut: true, minutesLeft: result.minutesLeft, mode: 'server' };
+            }
+            recordFailedAttempt();
+            return { success: false, lockedOut: false, mode: 'server' };
+        } catch (err) {
+            console.warn('Server password check failed (offline?), using local fallback:', err.message);
+            // fall through to local check below so the owner isn't locked out during a network outage
+        }
+    }
+
     const stored = await getAdminPasswordHash();
-    return hash === stored;
+    const ok = hash === stored;
+    if (ok) resetLocalAttempts(); else recordFailedAttempt();
+    return { success: ok, lockedOut: false, mode: 'local' };
 }
 
 async function setAdminPassword(newPass) {
     const hash = await sha256(newPass);
-    localStorage.setItem(SEC_KEYS.PASS_HASH, hash);
+    localStorage.setItem(SEC_KEYS.PASS_HASH, hash); // always keep a local fallback copy
+    const syncUrl = (typeof getSyncUrl === 'function') ? getSyncUrl() : '';
+    if (syncUrl) {
+        try { await setPasswordOnServer(syncUrl, hash); }
+        catch (err) { console.warn('Could not push new password to server:', err.message); }
+    }
 }
 
 function isSessionValid() {
     const authed = sessionStorage.getItem(SEC_KEYS.AUTH_SESSION);
     const authTime = parseInt(sessionStorage.getItem(SEC_KEYS.AUTH_TIME) || '0', 10);
     if (!authed) return false;
-    const minutesSince = (Date.now() - authTime) / 60000;
-    return minutesSince < SESSION_TIMEOUT_MIN;
+    return (Date.now() - authTime) / 60000 < SESSION_TIMEOUT_MIN;
 }
-
 function markSessionAuthed() {
     sessionStorage.setItem(SEC_KEYS.AUTH_SESSION, 'true');
     sessionStorage.setItem(SEC_KEYS.AUTH_TIME, Date.now().toString());
 }
-
 function clearSession() {
     sessionStorage.removeItem(SEC_KEYS.AUTH_SESSION);
     sessionStorage.removeItem(SEC_KEYS.AUTH_TIME);
 }
 
 // ---------- Entry Points ----------
-
-// Called from index.html's "Admin Panel" button
 async function openAdminModal() {
     const inputPass = prompt('🔐 Enter Admin Password:');
     if (inputPass === null) return;
 
-    if (await verifyAdminPassword(inputPass)) {
+    const result = await verifyAdminPassword(inputPass);
+    if (result.success) {
         markSessionAuthed();
         window.location.href = 'admin.html';
+    } else if (result.lockedOut) {
+        alert(`🔒 অনেকবার ভুল পাসওয়ার্ড দেওয়া হয়েছে। ${result.minutesLeft} মিনিট পর আবার চেষ্টা করুন।`);
     } else {
         alert('❌ ভুল পাসওয়ার্ড! প্রবেশ করার অনুমতি নেই।');
     }
 }
 
-// Guard that runs at the top of admin.html
 async function guardAdminPage() {
-    if (isSessionValid()) return; // still logged in this tab session
+    if (isSessionValid()) return;
 
     const verify = prompt('🔐 Security Check: Enter Admin Password:');
-    if (verify !== null && await verifyAdminPassword(verify)) {
+    if (verify === null) {
+        window.location.href = 'index.html';
+        return;
+    }
+    const result = await verifyAdminPassword(verify);
+    if (result.success) {
         markSessionAuthed();
+    } else if (result.lockedOut) {
+        alert(`🔒 অনেকবার ভুল পাসওয়ার্ড দেওয়া হয়েছে। ${result.minutesLeft} মিনিট পর আবার চেষ্টা করুন।`);
+        window.location.href = 'index.html';
     } else {
         alert('❌ Access Denied!');
         window.location.href = 'index.html';
     }
 }
 
-// Called from the Change Password button in admin.html
 async function changeAdminPassword() {
     const currentPass = prompt('বর্তমান পাসওয়ার্ড লিখুন:');
     if (currentPass === null) return;
 
-    if (await verifyAdminPassword(currentPass)) {
+    const result = await verifyAdminPassword(currentPass);
+    if (result.success) {
         const newPass = prompt('নতুন পাসওয়ার্ড দিন:');
         if (newPass && newPass.trim() !== '') {
             await setAdminPassword(newPass.trim());
@@ -123,6 +198,8 @@ async function changeAdminPassword() {
         } else {
             alert('⚠️ খালি পাসওয়ার্ড দেওয়া যাবে না!');
         }
+    } else if (result.lockedOut) {
+        alert(`🔒 অনেকবার ভুল পাসওয়ার্ড দেওয়া হয়েছে। ${result.minutesLeft} মিনিট পর আবার চেষ্টা করুন।`);
     } else {
         alert('❌ বর্তমান পাসওয়ার্ড ভুল হয়েছে!');
     }

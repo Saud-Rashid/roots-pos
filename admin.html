@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <div style="text-align: right; padding: 0 25px 25px;">
+            <div class="section-actions">
                 <button class="excel-btn" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Export Today (Excel)</button>
             </div>
         </div>
@@ -118,7 +118,7 @@
                 </div>
             </section>
 
-            <div style="text-align: right; margin-top: 15px; padding: 0 25px 25px;">
+            <div class="section-actions">
                 <button class="btn-danger-reset" onclick="resetDayData()"><i class="fa-solid fa-triangle-exclamation"></i> Manual Reset Override</button>
             </div>
         </div>
@@ -141,7 +141,7 @@
         <div id="tab-backup" class="tab-content">
             <section class="admin-section">
                 <h3><i class="fa-solid fa-key"></i> Admin Password</h3>
-               
+                <p class="section-hint">পাসওয়ার্ড এখন SHA-256 hash আকারে সেভ হয় — Inspect/DevTools দিয়ে কেউ আসল পাসওয়ার্ড দেখতে পারবে না।</p>
                 <button onclick="changeAdminPassword()" class="admin-link-btn"><i class="fa-solid fa-key"></i> Change Password</button>
             </section>
 

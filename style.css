@@ -201,3 +201,91 @@ input[type="number"] {
 .dot-green { background: var(--accent); }
 .dot-red { background: var(--danger); }
 .dot-gray { background: var(--text-muted); }
+
+.section-actions { text-align: right; padding: 0 25px 25px; margin-top: 15px; }
+.icon-wrapper { font-size: 1.4rem; color: var(--primary); margin-bottom: 8px; }
+
+/* Consistent icon+text alignment on every button-like element */
+.admin-link-btn, .excel-btn, .btn-danger-reset, .add-item-btn, .file-label {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+/* ======================================================================
+   MOBILE RESPONSIVE — applies to both index.html and admin.html
+   ====================================================================== */
+@media (max-width: 600px) {
+    body { padding: 0; align-items: flex-start; }
+    .pos-container, .admin-container { border-radius: 0; max-width: 100%; min-height: 100vh; }
+
+    .pos-header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+    .pos-header h2 { font-size: 1.05rem; }
+    .pos-header > div:first-child { flex: 1; min-width: 0; }
+
+    .panel { padding: 15px; }
+    .item-panel { border-right: none; border-bottom: 1px solid var(--border); }
+
+    .category-bar, .tab-bar { -webkit-overflow-scrolling: touch; }
+    .tab-bar { padding: 10px 12px 0; }
+    .tab-btn { padding: 10px 12px; font-size: 0.78rem; gap: 6px; }
+
+    .item-grid { gap: 8px; max-height: none; }
+    .item-card { padding: 12px 8px; }
+    .item-card h4 { font-size: 0.85rem; }
+
+    .display-value { font-size: 2.2rem; }
+    .dialpad-grid { gap: 8px; }
+    .btn-num { padding: 14px 0; font-size: 1.15rem; }
+
+    .stats-grid { padding: 15px; gap: 10px; }
+    .stat-card { padding: 14px; gap: 10px; }
+    .stat-card span { font-size: 1.1rem; }
+
+    .clock-card { margin: 15px; padding: 16px; flex-direction: column; align-items: flex-start; gap: 14px; }
+
+    .admin-section { padding: 0 15px 20px; }
+    .add-item-form { flex-direction: column; align-items: stretch; }
+    .add-item-form input { min-width: 100%; }
+
+    .sync-row { flex-direction: column; }
+    .sync-row input { min-width: 100%; }
+
+    .backup-actions { flex-direction: column; }
+    .backup-actions .admin-link-btn, .backup-actions .file-label { width: 100%; }
+
+    .section-actions { padding: 0 15px 20px; }
+    .section-actions .excel-btn, .section-actions .btn-danger-reset { width: 100%; }
+
+    .cal-cell { padding: 4px; font-size: 0.65rem; }
+    .cal-daynum { font-size: 0.72rem; }
+    .cal-sales { font-size: 0.58rem; }
+    .cal-weekday { font-size: 0.6rem; }
+
+    .history-detail-header { flex-direction: column; align-items: flex-start; }
+    .history-detail-header button { width: 100%; }
+
+    /* Table -> stacked cards on small screens */
+    .table-responsive table, .table-responsive thead, .table-responsive tbody,
+    .table-responsive th, .table-responsive td, .table-responsive tr { display: block; }
+    .table-responsive thead { display: none; }
+    .table-responsive tr {
+        background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px;
+        margin-bottom: 12px; padding: 6px 14px;
+    }
+    .table-responsive td {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 9px 0; border-bottom: 1px dashed var(--border); font-size: 0.85rem; text-align: right;
+    }
+    .table-responsive td:last-child { border-bottom: none; }
+    .table-responsive td::before {
+        content: attr(data-label); font-weight: 600; color: var(--text-muted); text-align: left; padding-right: 10px;
+    }
+    .table-responsive td.no-label { justify-content: center; padding: 10px 0; }
+    .table-responsive td.no-label::before { content: none; }
+    .table-responsive td input[type="number"], .table-responsive td input[type="text"] {
+        width: auto; max-width: 130px; text-align: right;
+    }
+}
+
+@media (max-width: 360px) {
+    .item-grid { grid-template-columns: 1fr; }
+}
