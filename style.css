@@ -55,7 +55,7 @@ body {
 
 .excel-btn { background: #16a34a; border: none; margin-right: 8px; }
 
-.pos-body { display: grid; grid-template-columns: 1.2fr 1fr; }
+.pos-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 0; }
 
 @media (max-width: 768px) { .pos-body { grid-template-columns: 1fr; } }
 
@@ -76,10 +76,12 @@ body {
 }
 .item-card.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.2); }
 
-.dialpad-panel { display: flex; flex-direction: column; justify-content: space-between; }
-.display-box { background: #090d16; border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: right; }
-.display-label { font-size: 0.85rem; color: var(--primary); font-weight: 600; }
+.dialpad-panel { display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
+.display-box { background: #090d16; border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: right; margin-bottom: 0; }
+.display-label { font-size: 0.85rem; color: var(--primary); font-weight: 600; margin-bottom: 10px; }
+.display-value-wrap { margin-top: 12px; display: flex; align-items: baseline; justify-content: flex-end; gap: 10px; }
 .display-value { font-size: 2.8rem; font-weight: 700; color: var(--accent); }
+.unit { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
 
 .dialpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
 .btn-num {
@@ -215,26 +217,32 @@ input[type="number"] {
    ====================================================================== */
 @media (max-width: 600px) {
     body { padding: 0; align-items: flex-start; }
-    .pos-container, .admin-container { border-radius: 0; max-width: 100%; min-height: 100vh; }
+    .pos-container, .admin-container { border-radius: 0; max-width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
 
     .pos-header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
     .pos-header h2 { font-size: 1.05rem; }
     .pos-header > div:first-child { flex: 1; min-width: 0; }
 
-    .panel { padding: 15px; }
-    .item-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .pos-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; }
+
+    .panel { padding: 15px; overflow: hidden; display: flex; flex-direction: column; }
+    .item-panel { border-right: none; border-bottom: 1px solid var(--border); flex: 1; overflow: hidden; }
+    .dialpad-panel { flex: 1; overflow-y: auto; }
 
     .category-bar, .tab-bar { -webkit-overflow-scrolling: touch; }
     .tab-bar { padding: 10px 12px 0; }
     .tab-btn { padding: 10px 12px; font-size: 0.78rem; gap: 6px; }
 
-    .item-grid { gap: 8px; max-height: none; }
+    .item-grid { gap: 8px; max-height: none; overflow-y: auto; flex: 1; }
     .item-card { padding: 12px 8px; }
     .item-card h4 { font-size: 0.85rem; }
 
-    .display-value { font-size: 2.2rem; }
-    .dialpad-grid { gap: 8px; }
-    .btn-num { padding: 14px 0; font-size: 1.15rem; }
+    .display-box { padding: 14px; margin-bottom: 10px; }
+    .display-value { font-size: 2rem; }
+    .display-value-wrap { margin-top: 8px; }
+    .dialpad-grid { gap: 6px; margin: 10px 0; }
+    .btn-num { padding: 12px 0; font-size: 1.1rem; }
+    .btn-submit { padding: 14px; font-size: 0.95rem; }
 
     .stats-grid { padding: 15px; gap: 10px; }
     .stat-card { padding: 14px; gap: 10px; }
