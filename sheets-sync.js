@@ -14,7 +14,18 @@
 
 let syncDebounceTimer = null;
 let isSyncing = false;
-let lastSyncStatus = { ok: null, time: null, message: '' };
+const LAST_SYNC_TIME_KEY = 'roots_last_cloud_sync_time';
+const savedLastSyncTime = localStorage.getItem(LAST_SYNC_TIME_KEY);
+let lastSyncStatus = savedLastSyncTime
+    ? { ok: true, time: new Date(savedLastSyncTime), message: 'Synced' }
+    : { ok: null, time: null, message: '' };
+
+function setSyncStatus(status) {
+    lastSyncStatus = status;
+    if (status.ok === true && status.time) {
+        localStorage.setItem(LAST_SYNC_TIME_KEY, status.time.toISOString());
+    }
+}
 
 function getSyncUrl() {
     return normalizeSyncUrl(localStorage.getItem(STORAGE_KEYS.SYNC_URL) || '');
@@ -74,9 +85,9 @@ async function pushStateToCloud(url) {
             }
         };
         await postToCloud(url, payload);
-        lastSyncStatus = { ok: true, time: new Date(), message: 'Synced' };
+        setSyncStatus({ ok: true, time: new Date(), message: 'Synced' });
     } catch (err) {
-        lastSyncStatus = { ok: false, time: new Date(), message: err.message };
+        setSyncStatus({ ok: false, time: new Date(), message: err.message });
     } finally {
         isSyncing = false;
         if (typeof window.__onSyncStatusChange === 'function') window.__onSyncStatusChange(lastSyncStatus);
@@ -146,7 +157,9 @@ async function logOrderToCloud(itemName, quantity, price) {
 
 async function testSyncConnection(url) {
     try {
-        await postToCloud(url, { action: 'ping' });
+        // A test must send real state, not a no-op ping. This creates/updates
+        // the State, Menu, and Sales History tabs in a working deployment.
+        await pushStateToCloud(url);
         return { success: true };
     } catch (err) {
         return { success: false, error: err.message };

@@ -455,7 +455,7 @@ async function handleTestSyncConnection() {
     statusEl.innerHTML = `<span class="dot dot-gray"></span> Testing...`;
     const result = await testSyncConnection(url);
     if (result.success) {
-        alert('✅ Test request পাঠানো হয়েছে! Google Sheet খুলে পরের অর্ডারের data State বা OrderLog sheet-এ আসে কিনা দেখুন।');
+        alert('✅ Current menu ও sales data sync করার request পাঠানো হয়েছে। Google Sheet refresh করে State, Menu ও Sales History tab দেখুন।');
     } else {
         alert('❌ Connection ব্যর্থ: ' + result.error + '\n\nSETUP_GUIDE.md অনুযায়ী Apps Script deploy করা আছে কিনা check করুন।');
     }
