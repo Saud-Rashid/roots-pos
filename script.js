@@ -432,18 +432,20 @@ async function handleSaveSyncUrl() {
         alert('☁️ Cloud sync বন্ধ করা হয়েছে। Local storage এ ডাটা থাকবে (password check ও local এ ফিরে যাবে)।');
         return;
     }
-    setSyncUrl(url);
+    const savedUrl = setSyncUrl(url);
+    document.getElementById('sync-url-input').value = savedUrl;
     // Push the current local password hash up so the server becomes the source of truth —
     // otherwise the server's default ("admin123") could mismatch a password already changed locally.
     try {
         const currentHash = await getAdminPasswordHash();
-        await setPasswordOnServer(url, currentHash);
+        await setPasswordOnServer(savedUrl, currentHash);
     } catch (err) {
         console.warn('Password not yet pushed to server (will retry on next change):', err.message);
     }
     updateSyncStatusUI();
     alert('✅ Sync URL সেভ হয়েছে! এখন থেকে সব ডাটা cloud এ sync হবে, এবং password check ও server-side (অনেক বেশি secure) হয়ে গেছে।');
-    window.__rootsCloudSyncTrigger();
+    await pushStateToCloud(savedUrl);
+    updateSyncStatusUI();
 }
 
 async function handleTestSyncConnection() {

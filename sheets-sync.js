@@ -17,15 +17,24 @@ let isSyncing = false;
 let lastSyncStatus = { ok: null, time: null, message: '' };
 
 function getSyncUrl() {
-    return localStorage.getItem(STORAGE_KEYS.SYNC_URL) || '';
+    return normalizeSyncUrl(localStorage.getItem(STORAGE_KEYS.SYNC_URL) || '');
 }
 
 function setSyncUrl(url) {
-    localStorage.setItem(STORAGE_KEYS.SYNC_URL, url.trim());
+    const normalizedUrl = normalizeSyncUrl(url);
+    localStorage.setItem(STORAGE_KEYS.SYNC_URL, normalizedUrl);
+    return normalizedUrl;
 }
 
 function clearSyncUrl() {
     localStorage.removeItem(STORAGE_KEYS.SYNC_URL);
+}
+
+function normalizeSyncUrl(url) {
+    const cleaned = String(url || '').trim().replace(/\/$/, '');
+    const isAppsScriptWebApp = /^https:\/\/script\.google\.com\/macros\/s\//i.test(cleaned);
+    if (isAppsScriptWebApp && !/\/(exec|dev)(?:[?#]|$)/i.test(cleaned)) return cleaned + '/exec';
+    return cleaned;
 }
 
 // Apps Script ContentService redirects its response to a Google-hosted URL.
