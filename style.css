@@ -61,16 +61,28 @@ body {
 
 .panel { padding: 25px; }
 .item-panel { border-right: 1px solid var(--border); }
-.panel-header { margin-bottom: 15px; }
+.panel-header { margin-bottom: 15px; flex-shrink: 0; }
 
-.category-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 15px; }
+.category-bar { 
+    display: flex; 
+    gap: 8px; 
+    overflow-x: auto; 
+    padding-bottom: 12px; 
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
 .cat-btn {
     background: var(--card-inner); color: var(--text-muted); border: 1px solid var(--border);
     padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; cursor: pointer;
 }
 .cat-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-.item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 380px; overflow-y: auto; }
+.item-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; 
+    overflow-y: auto;
+}
 .item-card {
     background: var(--card-inner); border: 2px solid transparent; border-radius: 16px; padding: 15px 10px; text-align: center; cursor: pointer;
 }
@@ -225,17 +237,39 @@ input[type="number"] {
 
     .pos-body { display: flex; flex-direction: column; overflow: hidden; flex: 1; }
 
-    .panel { padding: 15px; overflow: hidden; display: flex; flex-direction: column; }
-    .item-panel { border-right: none; border-bottom: 1px solid var(--border); flex: 1; overflow: hidden; }
-    .dialpad-panel { flex: 1; overflow-y: auto; }
+    .panel { padding: 15px; display: flex; flex-direction: column; }
+    .item-panel { 
+        border-right: none; 
+        border-bottom: 1px solid var(--border); 
+        flex: 0 1 auto;
+        overflow-y: auto;
+        max-height: 50vh;
+    }
+    .dialpad-panel { 
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+    }
 
     .category-bar, .tab-bar { -webkit-overflow-scrolling: touch; }
     .tab-bar { padding: 10px 12px 0; }
     .tab-btn { padding: 10px 12px; font-size: 0.78rem; gap: 6px; }
 
-    .item-grid { gap: 8px; max-height: none; overflow-y: auto; flex: 1; }
+    .item-grid { 
+        gap: 8px; 
+        overflow-y: auto;
+        grid-template-columns: repeat(2, 1fr);
+    }
     .item-card { padding: 12px 8px; }
     .item-card h4 { font-size: 0.85rem; }
+    
+    /* Mobile adjustments for proper display */
+    .item-panel .panel-header {
+        margin-bottom: 12px;
+    }
+    .item-panel .category-bar {
+        margin-bottom: 12px;
+    }
 
     .display-box { padding: 14px; margin-bottom: 10px; }
     .display-value { font-size: 2rem; }
