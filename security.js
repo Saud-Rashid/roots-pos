@@ -103,6 +103,9 @@ async function verifyAdminPassword(inputPass) {
     if (syncUrl) {
         try {
             const result = await verifyPasswordOnServer(syncUrl, hash);
+            if (result.unsupported) {
+                throw new Error('Apps Script password actions are not deployed yet');
+            }
             if (result.success) {
                 resetLocalAttempts();
                 return { success: true, mode: 'server' };

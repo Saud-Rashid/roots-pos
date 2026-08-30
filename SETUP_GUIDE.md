@@ -64,6 +64,43 @@ function doPost(e) {
     var data = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
 
+    // Server-side admin password storage and rate limiting.
+    if (data.action === 'setPassword') {
+      var newHash = data.payload && data.payload.hash;
+      if (!newHash) return jsonOut({ success: false, error: 'Password hash missing' });
+      var props = PropertiesService.getScriptProperties();
+      props.setProperty('roots_admin_pass_hash', newHash);
+      props.deleteProperty('roots_admin_login_attempts');
+      props.deleteProperty('roots_admin_lock_until');
+      return jsonOut({ success: true });
+    }
+
+    if (data.action === 'verifyPassword') {
+      var props = PropertiesService.getScriptProperties();
+      var lockUntil = parseInt(props.getProperty('roots_admin_lock_until') || '0', 10);
+      if (lockUntil && Date.now() < lockUntil) {
+        return jsonOut({ success: false, lockedOut: true, lockUntil: lockUntil });
+      }
+
+      var storedHash = props.getProperty('roots_admin_pass_hash');
+      var isCorrect = !!storedHash && data.payload && data.payload.hash === storedHash;
+      if (isCorrect) {
+        props.deleteProperty('roots_admin_login_attempts');
+        props.deleteProperty('roots_admin_lock_until');
+        return jsonOut({ success: true });
+      }
+
+      var attempts = parseInt(props.getProperty('roots_admin_login_attempts') || '0', 10) + 1;
+      if (attempts >= 5) {
+        var newLockUntil = Date.now() + (5 * 60 * 1000);
+        props.setProperty('roots_admin_lock_until', String(newLockUntil));
+        props.deleteProperty('roots_admin_login_attempts');
+        return jsonOut({ success: false, lockedOut: true, lockUntil: newLockUntil });
+      }
+      props.setProperty('roots_admin_login_attempts', String(attempts));
+      return jsonOut({ success: false });
+    }
+
     if (data.action === 'saveState') {
       var sheet = ss.getSheetByName('State') || ss.insertSheet('State');
       sheet.getRange(1, 1).setValue(JSON.stringify(data.payload));

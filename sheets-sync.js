@@ -163,13 +163,16 @@ async function verifyPasswordOnServer(url, hash) {
         body: JSON.stringify({ action: 'verifyPassword', payload: { hash } })
     });
     const json = await res.json();
+    if (json.error === 'Unknown action') {
+        return { success: false, unsupported: true };
+    }
     if (json.lockedOut) {
         const minutesLeft = json.lockUntil
             ? Math.max(1, Math.ceil((new Date(json.lockUntil) - Date.now()) / 60000))
             : LOCKOUT_MINUTES;
         return { success: false, lockedOut: true, minutesLeft };
     }
-    return { success: !!json.success, lockedOut: false };
+    return { success: !!json.success, lockedOut: false, unsupported: false };
 }
 
 async function setPasswordOnServer(url, hash) {
