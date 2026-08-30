@@ -168,7 +168,7 @@ function jsonOut(obj) {
 2. Gear icon (⚙️) এ ক্লিক করে Type থেকে **Web app** সিলেক্ট করুন
 3. Settings:
    - **Execute as**: Me (আপনার একাউন্ট)
-   - **Who has access**: Anyone
+   - **Who has access**: Anyone. If Google only shows **Anyone with Google account**, select it and keep the POS browser signed in to a Google account.
 4. **Deploy** এ ক্লিক করুন
 5. প্রথমবার একটা permission popup আসবে — নিজের Google account সিলেক্ট করে **Advanced → Go to [project name] (unsafe) → Allow** এ ক্লিক করুন (এটা Google এর নিজস্ব safety warning, এখানে সম্পূর্ণ safe কারণ এটা আপনার নিজেরই script)
 6. একটা **Web app URL** পাবেন — এটা কপি করুন (এমন দেখতে: `https://script.google.com/macros/s/AKfycb.../exec`)

@@ -44,6 +44,9 @@ function postToCloud(url, payload) {
     return fetch(url, {
         method: 'POST',
         mode: 'no-cors',
+        // This supports deployments restricted to signed-in Google accounts.
+        // The POS browser must be logged into an account allowed by the deployment.
+        credentials: 'include',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
     });
